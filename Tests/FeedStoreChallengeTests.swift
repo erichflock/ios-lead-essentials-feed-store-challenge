@@ -32,9 +32,9 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	}
 
 	func test_retrieve_deliversFoundValuesOnNonEmptyCache() {
-//		let sut = makeSUT()
-//
-//		assertThatRetrieveDeliversFoundValuesOnNonEmptyCache(on: sut)
+		let sut = makeSUT()
+
+		assertThatRetrieveDeliversFoundValuesOnNonEmptyCache(on: sut)
 	}
 
 	func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
@@ -99,14 +99,31 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	
 }
 
+struct Cache {
+    let localFeedImages: [LocalFeedImage]
+    let timestamp: Date
+}
+
 class FeedStoreSpy: FeedStore {
+        
+    var cache: Cache?
     
     func deleteCachedFeed(completion: @escaping DeletionCompletion) {}
     
-    func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {}
+    func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
+        
+        cache = Cache(localFeedImages: feed, timestamp: timestamp)
+        completion(nil)
+    }
     
     func retrieve(completion: @escaping RetrievalCompletion) {
-        completion(.empty)
+        
+        guard let cache = cache else {
+            completion(.empty)
+            return
+        }
+        
+        completion(.found(feed: cache.localFeedImages, timestamp: cache.timestamp))
     }
     
 }

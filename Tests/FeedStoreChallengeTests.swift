@@ -99,11 +99,6 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	
 }
 
-struct Cache {
-    let localFeedImages: [LocalFeedImage]
-    let timestamp: Date
-}
-
 class FeedStoreSpy: FeedStore {
         
     var cache: Cache?
